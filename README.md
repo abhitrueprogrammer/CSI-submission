@@ -1,7 +1,7 @@
 # Python Grep Implementation
 usage:
 ```bash
-grep [options] pattern filename
+python3 grep [options] pattern filename
 ```
 Working options include as of now:
   caseInsensitive: '-i'
