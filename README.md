@@ -7,8 +7,12 @@ Working options include as of now:
 
   * caseInsensitive: '-i'
   
-  * lineCount: '-c'
+  * Show only line count of matching : '-c'
   
   * invert: '-v'
   
   * wordOnly: '-w'
+    
+  * show Line count: '-n'
+
+  * recursively grep files inside directory: '-r'
