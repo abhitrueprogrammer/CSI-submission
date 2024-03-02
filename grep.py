@@ -30,7 +30,7 @@ arguments = sys.argv
 i = 1 # A index for where the pattern file starts
 
 #finding and seting up flags
-case_insensitive = show_only_matching_lc = invert = word_only = show_line_count = show_file_name = directory = False
+case_insensitive = show_only_matching_lc = invert = word_only = show_line_count = show_file_name = directory =lines_after =lines_before = False
 if '-i' in arguments:
     case_insensitive = True
     i += 1
@@ -49,7 +49,20 @@ if '-n' in arguments:
 if '-r' in arguments:
     i+=1
     directory = True
-    
+   
+if '-A' in arguments:
+    i+=2
+    indexLine = arguments.index('-A') +1
+    lines_after = int(arguments[indexLine])
+if '-B' in arguments:
+    i+=2
+    indexLine = arguments.index('-B') +1
+    lines_before = int(arguments[indexLine])
+if '-C' in arguments:
+    i+=2
+    indexLine = arguments.index('-C') +1
+    lines_after = int(arguments[indexLine])
+    lines_before = int(arguments[indexLine])
 
 pattern = sys.argv[i]
 pattern = preparePattern(pattern, word_only)
@@ -74,14 +87,14 @@ for file in files:
         lc = 0 #short for line count. Following the convention ;)
         line_lst = f.readlines()
         line_lst = [i.strip() for i in line_lst]
-        for line in line_lst:
+        for i in range(len(line_lst)):
             lc += 1
             #matching the file through regex. 
             
             if(case_insensitive):
-                result = re.match(pattern, line, re.IGNORECASE)
+                result = re.match(pattern, line_lst[i], re.IGNORECASE)
             else:
-                result = re.match(pattern, line)
+                result = re.match(pattern, line_lst[i])
             
             if invert:
                 condition = result is None
@@ -91,12 +104,33 @@ for file in files:
             if condition:
                 found_instances_n += 1
                 if not show_only_matching_lc: # Won't print lines if -c option is enabled
+                    #printing if -B is enabled
+                    if lines_before:
+                        extraLineIndex = i - lines_before
+                        if extraLineIndex < 0:
+                            extraLineIndex = 0
+                        for j in range(extraLineIndex, extraLineIndex + lines_before):
+                            if(show_file_name):
+                                print(file, end=":")
+                            print(line_lst[j])
+                    #Major Printing
                     if(show_file_name):
                         print(file, end=":")
                     if(show_line_count):
                         print(lc, end=":")
-                    
-                    print(line) 
+                    print(line_lst[i]) 
 
+                    #printing if -A is enabled
+                    if lines_after:
+                        extraLineIndex = i + lines_after
+                        if extraLineIndex > len(line_lst):
+                            extraLineIndex = len(line_lst)
+                        for j in range(extraLineIndex - lines_after, extraLineIndex):
+                            if(show_file_name):
+                                print(file, end=":")
+                            print(line_lst[j])
+                    if lines_after or lines_before:
+                        print("---")
 if (show_only_matching_lc): 
+
     print(found_instances_n)
